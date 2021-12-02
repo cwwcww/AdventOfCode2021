@@ -1,0 +1,36 @@
+<Project>
+    <PropertyGroup>
+
+        <SlnFileName>$([System.IO.Directory]::GetFiles($(MSBuildThisFileDirectory), "*.sln")[0])</SlnFileName>
+        <SlnName>$([System.IO.Path]::GetFileNameWithoutExtension($(SlnFileName)))</SlnName>
+
+        <TargetFramework>net6.0</TargetFramework>
+        <LangVersion>preview</LangVersion>
+        <Nullable>enable</Nullable>
+        <EnablePreviewFeatures>True</EnablePreviewFeatures>
+        <AnalysisLevel>preview</AnalysisLevel>
+        <WarningsAsErrors>nullable</WarningsAsErrors>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+        
+        <RootNamespace>$(SlnName).$(MSBuildProjectName)</RootNamespace>
+        <AssemblyName>$(SlnName).$(MSBuildProjectName)</AssemblyName>
+
+        <RepositoryType>git</RepositoryType>
+
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="morelinq" Version="3.3.2" />
+        <PackageReference Include="System.Interactive.Async" Version="5.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Using Include="Shared.Helpers" Static="True" />
+    </ItemGroup>
+
+    <ItemGroup Condition="$(MSBuildProjectName) != 'Shared'">
+        <ProjectReference Include="..\Shared\Shared.csproj" />
+        <Content Include="input.txt" CopyToOutputDirectory="PreserveNewest"/>
+    </ItemGroup>
+</Project>
