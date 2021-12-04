@@ -2,9 +2,9 @@ namespace Shared;
 
 public static class Helpers
 {
-    public static IEnumerable<string> ReadInput()
+    public static IEnumerable<string> ReadInput(string filename = "input.txt")
     {
-        using var stream = File.OpenRead("input.txt");
+        using var stream = File.OpenRead(filename);
         using var reader = new StreamReader(stream);
         while (true)
         {
