@@ -1,33 +1,41 @@
-using System.Collections.Immutable;
-
 using MoreLinq;
 
-var fishes = ReadInput().Single().Split(',').Select(int.Parse).Select(x=>new Fish(x)).ToImmutableList();
 
-for (var day = 0; day < 100; day++)
+long Solve(int days)
 {
-    foreach (var fish in fishes)
-    {
-        if (fish.DaysLeftToMultiply == 0)
-        {
-            fishes = fishes.Add(new Fish(8));
-            fish.DaysLeftToMultiply = 6;
-        }
-        else
-        {
-            fish.DaysLeftToMultiply--;
-        }
-    }
-
-    Console.WriteLine($"{fishes.Count} fish after {day+1} days");
+    var population = new FishPopulation(ReadInput().Single().Split(',').Select(long.Parse));
+    population.Step(days);
+    return population.FishCount;
 }
 
-class Fish 
+WriteOutput(1, Solve(80));
+WriteOutput(2, Solve(256));
+
+class FishPopulation
 {
-    public Fish(int daysLeftToMultiply)
+    private const int _phaseCount = 7;
+    private readonly long[] _fishGroups = new long[_phaseCount];
+    private readonly long[] _newFish = new long[_phaseCount];
+
+    public FishPopulation(IEnumerable<long> fishTimers)
     {
-        DaysLeftToMultiply = daysLeftToMultiply;
+        fishTimers.ForEach(x => _fishGroups[x]++);
     }
 
-    public int DaysLeftToMultiply { get; set; }
+    public void Step(int days)
+    {
+        foreach (var birthingGroup in Enumerable.Range(0, _phaseCount).Repeat().Take(days))
+        {
+            var targetGroup = birthingGroup + 2;
+            if (targetGroup >= _phaseCount)
+            {
+                targetGroup -= _phaseCount;
+            }
+
+            _fishGroups[targetGroup] += _newFish[targetGroup];
+            _newFish[targetGroup] = _fishGroups[birthingGroup];
+        }
+    }
+
+    public long FishCount => _fishGroups.Concat(_newFish).Sum();
 }
